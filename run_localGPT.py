@@ -1,42 +1,39 @@
-import os
 import logging
+import os
+
 import click
 import torch
-import utils
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler  # for streaming response
 from langchain.chains import RetrievalQA
 from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.llms import HuggingFacePipeline
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler  # for streaming response
-from langchain.callbacks.manager import CallbackManager
+
+import utils
 
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
-from prompt_template_utils import get_prompt_template
-from utils import get_embeddings
-
 # from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.vectorstores import Chroma
-from transformers import (
-    GenerationConfig,
-    pipeline,
-)
+from transformers import GenerationConfig, pipeline
 
+from constants import (
+    CHROMA_SETTINGS,
+    EMBEDDING_MODEL_NAME,
+    MAX_NEW_TOKENS,
+    MODEL_BASENAME,
+    MODEL_ID,
+    MODELS_PATH,
+    PERSIST_DIRECTORY,
+)
 from load_models import (
+    load_full_model,
     load_quantized_model_awq,
     load_quantized_model_gguf_ggml,
     load_quantized_model_qptq,
-    load_full_model,
 )
-
-from constants import (
-    EMBEDDING_MODEL_NAME,
-    PERSIST_DIRECTORY,
-    MODEL_ID,
-    MODEL_BASENAME,
-    MAX_NEW_TOKENS,
-    MODELS_PATH,
-    CHROMA_SETTINGS,
-)
+from prompt_template_utils import get_prompt_template
+from utils import get_embeddings
 
 
 def load_model(device_type, model_id, model_basename=None, LOGGING=logging):
@@ -122,7 +119,7 @@ def retrieval_qa_pipline(device_type, use_history, promptTemplate_type="llama"):
 
     """
     (1) Chooses an appropriate langchain library based on the enbedding model name.  Matching code is contained within ingest.py.
-    
+
     (2) Provides additional arguments for instructor and BGE models to improve results, pursuant to the instructions contained on
     their respective huggingface repository, project page or github repository.
     """
