@@ -5,8 +5,8 @@ import tempfile
 
 import requests
 from flask import Flask, render_template, request
-from werkzeug.utils import secure_filename
 from security import safe_requests
+from werkzeug.utils import secure_filename
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
